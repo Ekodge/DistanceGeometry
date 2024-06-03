@@ -1,5 +1,3 @@
-include("../src/JuliaDGP.jl")
-
 @testset "Distance constructors" begin
 
     @testset "Generic constructor" begin

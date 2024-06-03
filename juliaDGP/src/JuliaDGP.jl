@@ -23,5 +23,6 @@ include("DGP.jl")
 include("ErrorList.jl")
 include("Orders.jl")
 include("Utils.jl")
+include("../test/runtests.jl")
 name = PDBTools.name
 
