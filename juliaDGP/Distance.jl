@@ -90,6 +90,7 @@ struct Distance
       end
    end
 end
+# end of methods/functions that concern the Distance type
 
 # is the Distance instance holding an exact distance?
 function is_exact(d::Distance)
