@@ -12,6 +12,7 @@ using SimpleGraphs
 using Bijections
 using DataStructures
 using Printf
+using Test
 include("Distance.jl")
 include("myAtom.jl")
 include("Aminoacids.jl")
