@@ -85,7 +85,6 @@ end
     end
 
     @testset "Override of the show function" begin
-        print_to_string(f::Function, d::Distance) = (io = IOBuffer(); f(io,d); String(take!(io)))
         # Test the show function
         d = Distance(1.0, 1.0, 0)
         @test print_to_string(show,d) == "Distance(1.0)"
@@ -236,7 +235,7 @@ end
         d = Distance(1.0, 2.0, 1)
         @test with_higher_uncertainty(d) == Distance(1.0, 2.0, 2)
         # the hash code is the same of the original instance
-        #@test hash((with_higher_uncertainty(d))) = hash(d)
+        @test hash((with_higher_uncertainty(d))) == hash(d)
         # Test error cases :
         # Error : This Distance type does not hold an uncertain distance
         @test_throws ArgumentError with_higher_uncertainty(Distance(1.0, 2.0))

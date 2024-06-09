@@ -1,0 +1,1 @@
+print_to_string(f::Function, arg::Any) = (io = IOBuffer(); f(io,arg); String(take!(io)))
