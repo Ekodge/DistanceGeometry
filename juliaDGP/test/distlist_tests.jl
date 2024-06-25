@@ -82,6 +82,9 @@ distances_dict2 = Dict{Tuple{Int,Int}, Distance}(
     @testset "graph" begin
         dl = TestDistList(3, distances_dict)
         g = graph(dl)
-        #TODO: Add tests for the graph function
+        @test NE(g) == 3
+        @test NV(g) == 3
+        @test vlist(g) == [1, 2, 3]
+        @test elist(g) == [(1, 2), (1, 3), (2, 3)]
     end
 end
