@@ -17,4 +17,17 @@ include("utilstest.jl")
     @testset "myAtom tests" begin
         include("myAtom_tests.jl")
     end
+    @testset "Realization tests" begin
+        include("realization_tests.jl")
+    end
+    @testset "Orders tests" begin
+        include("orders_tests.jl")
+    end
+    # DGP test to be included here
+    @testset "Utils tests" begin
+        include("utils_tests.jl")
+    end
+    @testset "Errorlist tests" begin
+        include("errorlist_tests.jl")
+    end
 end

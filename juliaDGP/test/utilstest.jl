@@ -57,4 +57,13 @@ function expected_protein_graph(sequence::String)
     return (expected_atoms, expected_bonds)
 end
 
+#Create Atoms following the PDBTool atom struct
+function create_sample_PDBTool_atoms()
+    return [
+        Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+        Atom(index=2, index_pdb=2, name="CA", resname="ALA", chain="A", resnum=1, x=4.0, y=5.0, z=6.0),
+        Atom(index=3, index_pdb=3, name="C", resname="ALA", chain="A", resnum=1, x=7.0, y=8.0, z=9.0)
+    ]
+end
+
 
