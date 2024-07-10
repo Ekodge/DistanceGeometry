@@ -54,10 +54,11 @@ end
         @test realization.N == N
         @test length(realization) == N
         @test length(elements(realization)) == N
-        # Test error cases :
+
         # Error : The dimension cannot be nonpositive
         @test_throws ArgumentError Realization(-1, 5)
         @test_throws ArgumentError Realization(0, -8)
+
         # Error : The size of the DGP instance cannot be nonpositive
         @test_throws ArgumentError Realization(3, 0)
     end
@@ -70,6 +71,7 @@ end
         @test realization.N == length(atoms)
         @test length(realization) == length(atoms)
         @test length(elements(realization)) == length(atoms)
+
         # Error : Input Vector{Atom} has zero length
         empty_atoms = Vector{Atom}()
         @test_throws ArgumentError Realization(empty_atoms)
@@ -85,15 +87,18 @@ end
         @test realization.N == 1018
         @test length(realization) == 1018
         @test length(elements(realization)) == 1018
-        # Test error cases :
+
         # Error : Input file is supposed to be a PDB file; check if extension is coherent with content
         @test_throws ArgumentError Realization("test.txt", 1)
+
         # Error : Model ID cannot be nonpositive
         @test_throws ArgumentError Realization(PDBfile, 0)
+
         # Error : Something went wrong while reading the PDB file
         PDBfile = prefix * "doesnotexist.pdb"
         ## TODO : does not work if .pdb does not exist
         #@test_throws ArgumentError Realization(PDBfile, 1)
+
         # Error : Something went wrong while selecting the requested model
         PDBfile = prefix * "test_empty.pdb"
         ## TODO : does not work if .pdb doesn't not have atom in it
