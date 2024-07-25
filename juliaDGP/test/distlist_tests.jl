@@ -53,8 +53,7 @@ distances_dict2 = Dict{Tuple{Int,Int}, Distance}(
 
     @testset "details" begin
     dl = TestDistList(3, distances_dict)
-    #TODO: Test for details using print_to_string
-    # print_to_string(details,dl) == "(1,2) => Distance(0.0,1.0)\n(1,3) => Distance(0.0,2.0)\n(2,3) => Distance(0.0,3.0)\n"
+    @test print_to_string_stdout(details,dl) == "(1,2) => 0.5\n(1,3) => 1.0\n(2,3) => 1.5\n"
     end
 
     @testset "sublist" begin

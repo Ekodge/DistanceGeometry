@@ -23,7 +23,9 @@ include("utilstest.jl")
     @testset "Orders tests" begin
         include("orders_tests.jl")
     end
-    # DGP test to be included here
+    @testset "DGP tests" begin
+        include("dgp_tests.jl")
+    end
     @testset "Utils tests" begin
         include("utils_tests.jl")
     end

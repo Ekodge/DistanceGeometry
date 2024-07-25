@@ -36,11 +36,11 @@
         @test output == expected_output
     end
 
-    @testset "Details Function" begin
+    @testset "details" begin
         atoms = create_sample_PDBTool_atoms()
         realization = Realization(atoms)
         #TODO
-        #@test print_to_string(details,realization) == ""
+        @test print_to_string_stdout(details,realization) == "Realization{myAtom} (K = 3) {\n  ALA1-N => [1.0, 2.0, 3.0]\n  ALA1-CA => [4.0, 5.0, 6.0]\n  ALA1-C => [7.0, 8.0, 9.0]\n}"
     end
 end
 

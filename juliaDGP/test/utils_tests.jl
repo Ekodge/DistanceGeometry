@@ -116,6 +116,22 @@
     end
 
     @testset "dot" begin
-        #TODO : test dot function
+    g = UndirectedGraph{myAtom}()
+
+    # Define sample atoms
+    atom1 = myAtom("N", 1, "ALA")
+    atom2 = myAtom("CA", 1, "ALA")
+    atom3 = myAtom("C", 1, "ALA")
+
+    # Add atoms and edges to the graph
+    add!(g, atom1, atom2)
+    add!(g, atom2, atom3)
+    add!(g, atom1, atom3)
+
+    # Define the expected dot string
+    expected_dot = "graph {\n  \"ALA1-N\" -- \"ALA1-C\";\n  \"ALA1-N\" -- \"ALA1-CA\";\n  \"ALA1-CA\" -- \"ALA1-C\";\n}"
+
+    # Test the dot function
+    @test dot(g) == expected_dot
     end
 end

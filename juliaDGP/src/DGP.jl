@@ -205,6 +205,11 @@ struct DGP{T} <: DistList{T}
       new{myAtom}(3,distlist,order);
    end
 
+   #DGP constructor from given dimension, distlist and order, for testing purposes
+   function DGP(K::Int64,distlist::Dict{Tuple{T,T},Distance},order::Vector{T}) where {T}
+       new{T}(K,distlist,order);
+   end
+
    # overriding Base show function
    function Base.show(io::IO,dgp::DGP{T}) where {T}
       n = length(dgp.order);
