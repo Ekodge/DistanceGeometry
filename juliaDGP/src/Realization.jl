@@ -46,6 +46,9 @@ struct Realization{T} <: Dimensionality
 
    # constructor from PDB file
    function Realization(PDBfile::String,modelId::Int64)
+      if !isfile(PDBfile)
+          throw(ArgumentError("Input PDB file does not exist"));
+      end
       ex = get_extension(PDBfile);
       if ex != "pdb"
          throw(ArgumentError("Input file is supposed to be a PDB file; check if extension is coherent with content"));

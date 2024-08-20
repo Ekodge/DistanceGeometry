@@ -218,3 +218,4 @@ function with_higher_uncertainty(d::Distance)
    return Distance(d.lb,d.ub,d.uncertainty+1);
 end
 
+

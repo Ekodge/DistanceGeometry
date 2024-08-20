@@ -83,6 +83,8 @@ end
         PDBfile = prefix * "test.pdb"
         modelId = 1
         realization = Realization(PDBfile, modelId)
+
+        # Case : Realization from PDB file
         @test realization.K == 3
         @test realization.N == 1018
         @test length(realization) == 1018
@@ -96,12 +98,14 @@ end
 
         # Error : Something went wrong while reading the PDB file
         PDBfile = prefix * "doesnotexist.pdb"
-        ## TODO : does not work if .pdb does not exist
-        #@test_throws ArgumentError Realization(PDBfile, 1)
+
+        # Error : does not work if .pdb does not exist
+        @test_throws ArgumentError Realization(PDBfile, 1)
 
         # Error : Something went wrong while selecting the requested model
         PDBfile = prefix * "test_empty.pdb"
-        ## TODO : does not work if .pdb doesn't not have atom in it
+
+        ## TODO : does not work if .pdb is empty or does not have atoms ?
         #@test_throws ArgumentError Realization(PDBfile, 1)
     end
 end

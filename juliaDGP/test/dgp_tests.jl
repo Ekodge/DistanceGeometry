@@ -190,4 +190,137 @@ end
         #Delete the created file
         rm("test_instance.nmr")
     end
+
+    @testset "the different equals operators" begin
+
+        @testset "override of the '==' operator" begin
+            atoms = create_sample_PDBTool_atoms()
+            realization = Realization(atoms)
+            dgp = DGP(realization)
+            dgp2 = DGP(realization)
+
+            #Case : the two instances are the same
+            @test dgp == dgp2
+
+            #Case : the two instances have different dimensions
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=7.0, y=8.0, z=9.0),
+                 Atom(index=4, index_pdb=4, name="O", resname="GLY", chain="A", resnum=4, x=10.0, y=11.0, z=12.0)]
+            realization2 = Realization(atoms)
+            dgp2 = DGP(realization2)
+            @test dgp != dgp2
+
+            #Case : the two instances have different distances
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=7.0, y=2.5, z=5.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=16.0, y=5.0, z=5.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=17.0, y=17.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test dgp != dgp2
+
+            #Case : the two instances have different atoms but same dimensions,structures and distances
+            atoms = [Atom(index=1, index_pdb=1, name="A", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+            Atom(index=2, index_pdb=2, name="B", resname="CYS", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+            Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=7.0, y=8.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test dgp == dgp2
+
+            #Case : the two instances does not have the same order
+            atoms=[Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                   Atom(index=2, index_pdb=2, name="C", resname="ALA", chain="A", resnum=1, x=4.0, y=5.0, z=6.0),
+                   Atom(index=3, index_pdb=3, name="CA", resname="ALA", chain="A", resnum=1, x=7.0, y=8.0, z=9.0)]
+            realization4 = Realization(atoms)
+            dgp2 = DGP(realization4)
+            @test dgp == dgp2
+        end
+
+        @testset " (===) equalOrder function" begin
+            atoms = create_sample_PDBTool_atoms()
+            realization = Realization(atoms)
+            dgp = DGP(realization)
+            dgp2 = DGP(realization)
+
+            #Case : the two instances are the same
+            @test equalOrder(dgp,dgp2)
+
+            #Case : the two instances have different dimensions
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=7.0, y=8.0, z=9.0),
+                 Atom(index=4, index_pdb=4, name="O", resname="GLY", chain="A", resnum=4, x=10.0, y=11.0, z=12.0)]
+            realization2 = Realization(atoms)
+            dgp2 = DGP(realization2)
+            @test notEqualOrder(dgp,dgp2)
+
+            #Case : the two instances have different distances
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=7.0, y=2.5, z=5.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=16.0, y=5.0, z=5.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=17.0, y=17.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test notEqualOrder(dgp,dgp2)
+
+            #Case : the two instances have different atoms but same dimensions,structures and distances
+            atoms = [Atom(index=1, index_pdb=1, name="A", resname="ALATTEST", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+            Atom(index=2, index_pdb=2, name="B", resname="CYSTEST", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+            Atom(index=3, index_pdb=3, name="C", resname="GLYTEST", chain="A", resnum=3, x=7.0, y=8.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test equalOrder(dgp,dgp2)
+
+            #Case : the two instances does not have the same order
+            atoms=[Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                   Atom(index=3, index_pdb=3, name="CA", resname="ALA", chain="A", resnum=1, x=7.0, y=8.0, z=9.0),
+                   Atom(index=2, index_pdb=2, name="C", resname="ALA", chain="A", resnum=1, x=4.0, y=5.0, z=6.0)]
+            realization4 = Realization(atoms)
+            dgp2 = DGP(realization4)
+            @test notEqualOrder(dgp,dgp2)
+        end
+
+        @testset " (====) equals function" begin
+            atoms = create_sample_PDBTool_atoms()
+            realization = Realization(atoms)
+            dgp = DGP(realization)
+            dgp2 = DGP(realization)
+
+            #Case : the two instances are the same
+            @test equals(dgp,dgp2)
+
+            #Case : the two instances have different dimensions
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=7.0, y=8.0, z=9.0),
+                 Atom(index=4, index_pdb=4, name="O", resname="GLY", chain="A", resnum=4, x=10.0, y=11.0, z=12.0)]
+            realization2 = Realization(atoms)
+            dgp2 = DGP(realization2)
+            @test notEquals(dgp,dgp2)
+
+            #Case : the two instances have different distances
+            atoms = [Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=7.0, y=2.5, z=5.0),
+                 Atom(index=2, index_pdb=2, name="CA", resname="CYS", chain="A", resnum=2, x=16.0, y=5.0, z=5.0),
+                 Atom(index=3, index_pdb=3, name="C", resname="GLY", chain="A", resnum=3, x=17.0, y=17.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test notEquals(dgp,dgp2)
+
+            #Case : the two instances have different atoms but same dimensions,structures and distances
+            atoms = [Atom(index=1, index_pdb=1, name="A", resname="ALATTEST", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+            Atom(index=2, index_pdb=2, name="B", resname="CYSTEST", chain="A", resnum=2, x=4.0, y=5.0, z=6.0),
+            Atom(index=3, index_pdb=3, name="C", resname="GLYTEST", chain="A", resnum=3, x=7.0, y=8.0, z=9.0)]
+            realization3 = Realization(atoms)
+            dgp2 = DGP(realization3)
+            @test notEquals(dgp,dgp2)
+
+            #Case : the two instances does not have the same order
+            atoms=[Atom(index=1, index_pdb=1, name="N", resname="ALA", chain="A", resnum=1, x=1.0, y=2.0, z=3.0),
+                   Atom(index=3, index_pdb=3, name="CA", resname="ALA", chain="A", resnum=1, x=7.0, y=8.0, z=9.0),
+                   Atom(index=2, index_pdb=2, name="C", resname="ALA", chain="A", resnum=1, x=4.0, y=5.0, z=6.0)]
+            realization4 = Realization(atoms)
+            dgp2 = DGP(realization4)
+            @test notEquals(dgp,dgp2)
+        end
+
+    end
 end

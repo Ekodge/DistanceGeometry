@@ -6,6 +6,7 @@
 import Base.show
 import Base.length
 import Base.string
+import Base: ==
 import PDBTools.distance
 using PDBTools
 using SimpleGraphs

@@ -97,21 +97,24 @@
         @test sequence(atoms) == "GAC"
 
         @testset "sequence with PDB file as argument" begin
-            #Error : Input file is supposed to be a PDB file; check if extension is coherent with content
-            @test_throws ArgumentError sequence("test.txt")
-
-            #Error : Something went wrong while reading the PDB file
             prefix = "test/fileContainer/"
-            PDBfile = prefix * "test_empty.pdb"
-            ## TODO : does not work if .pdb doesn't not have atom in it
-            #@test_throws ArgumentError Realization(PDBfile, 1)
-            ## TODO : does not work if .pdb does not exist
-            PDBfile = "doesnotexist.pdb"
-            #@test_throws ArgumentError sequence(PDBfile)
 
             #Case: sequence from a PDB file
             PDBfile = prefix * "test.pdb"
             @test sequence(PDBfile) == "INFYGELVDLGVKEKLIEKAGAWYSYKGEKIGQGKANATAWLKDNPETAKEIEKKVRELLLSN"
+
+            #Error : Input file is supposed to be a PDB file; check if extension is coherent with content
+            @test_throws ArgumentError sequence("test.txt")
+
+            #Error : Something went wrong while reading the PDB file
+            PDBfile = prefix * "test_empty.pdb"
+
+            ## TODO : does not work if .pdb is empty or does not have any atoms ?
+            #@test_throws ArgumentError sequence(PDBfile, 1)
+
+            # Error : does not work if .pdb does not exist
+            PDBfile = "doesnotexist.pdb"
+            @test_throws ArgumentError sequence(PDBfile)
             end
     end
 

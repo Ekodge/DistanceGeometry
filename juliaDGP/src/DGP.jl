@@ -280,3 +280,268 @@ function MDjeep_format(dgp::DGP{T}) where {T}
    close(file);
 end
 
+# number of edges associated with one vertex within a dgp instance
+function count_edges(dgp::DGP{T}, vertex::T) where {T}
+    count = 0
+    for (u, v) in keys(dgp.distlist)
+        if u == vertex || v == vertex
+            count += 1
+        end
+    end
+    return count
+end
+
+#recursive function that returns a list of all possible label matching
+function generateAllLabelsMatching(possible_labels_matching::Dict{Int64, Vector{Int64}}, current_match::Dict{Int64,Int64})
+
+	current_candidate = -1
+
+	# if all labels are matched then return current_match
+	if length(current_match) == length(possible_labels_matching)
+		return [current_match]
+	end
+
+	# Get the label that isn't already matched
+	for i in 1:length(possible_labels_matching)
+    	if !haskey(current_match, i)
+        	current_candidate = i
+        	break
+    	end
+	end
+
+	all_labels_matching = Vector{Dict{Int64, Int64}}()
+
+    # Call the function recursively for each possible matching of the current label, empty list if no possible matching
+	for label in possible_labels_matching[current_candidate]
+		current_match_copy = deepcopy(current_match)
+		current_possible_matching_copy = deepcopy(possible_labels_matching)
+		current_match_copy[current_candidate] = label
+		#remove the label from the other labels
+		for j in 1:length(possible_labels_matching)
+			if current_candidate != j
+				current_possible_matching_copy[j] = filter!(x -> x != label, current_possible_matching_copy[j])
+				# If any label ends up with no possible matches, return an empty list
+                if isempty(current_possible_matching_copy[j])
+    				return []
+				end
+			end
+		end
+		# add the possible matching to the list of possible matching
+		all_labels_matching = [all_labels_matching; generateAllLabelsMatching(current_possible_matching_copy, current_match_copy)]
+	end
+
+	return all_labels_matching
+end
+
+# the various equals operators of DGP
+
+#override of the '==' operator
+#two DGP instances satisfy the '==' operator if they have the same dimension, number of elements,
+#the same structure and the same distances disregarding the order of the elements and what they represent. (isomorphic)
+function Base.:(==)(dgp1::DGP{T},dgp2::DGP{T}) where {T}
+   # checking the dimensions
+   if dgp1.K != dgp2.K
+        return false
+   end
+
+   # checking the number of vertices
+   if length(dgp1.order) != length(dgp2.order)
+        return false
+   end
+
+    numOfVertices = length(dgp1.order);
+
+    # creating labels for the vertices
+    labels1 = Dict{Int64,T}()
+    labels2 = Dict{Int64,T}()
+	#dgp1 to possible dgp2 labels
+    possible_labels_matching = Dict{Int64, Vector{Int64}}()
+
+    for i in 1:numOfVertices
+        labels1[i] = dgp1.order[i]
+        labels2[i] = dgp2.order[i]
+    end
+
+    # Check for each label if they can find at least one corresponding label in the other DGP
+    # by checking how many edges they are included in
+    for i in 1:numOfVertices
+        referenceCount1 = count_edges(dgp1, labels1[i])
+        possible_labels_matching[i] = Vector{Int64}()
+
+        for j in 1:numOfVertices
+            referenceCount2 = count_edges(dgp2, labels2[j])
+
+            if referenceCount1 == referenceCount2
+                push!(possible_labels_matching[i], j)
+            end
+        end
+
+        # If no matching label was found for this vertex, the graphs are not equal
+        if isempty(possible_labels_matching[i])
+            return false
+        end
+    end
+
+	fixed_matches = Dict{Int64, Int64}()
+
+    # Remove the labels that have already been matched (meaning only one match) and then check if the graphs
+	#can still be equal
+	for i in 1:numOfVertices
+		if length(possible_labels_matching[i]) == 1
+			matched_Label = possible_labels_matching[i][1]
+			fixed_matches[i] = matched_Label
+			#remove the label from the other labels
+			for j in 1:numOfVertices
+				if i != j
+					possible_labels_matching[j] = filter!(x -> x != matched_Label, possible_labels_matching[j])
+					# If no matching label was found for this vertex after filter, the graphs are not equal
+					if isempty(possible_labels_matching[i])
+        				return false
+					end
+				end
+			end
+		end
+	end
+
+	# Get all different permutation of possible matching between the two lists of labels
+	all_labels_matching = generateAllLabelsMatching(possible_labels_matching, fixed_matches)
+
+	# If no possible matching was found, the graphs are not equal
+	if isempty(all_labels_matching)
+		return false
+	end
+
+	found = false
+	# Check if the two graphs are equal for at least one of the possible label matching
+	# by checking if the distances are equal
+	for possible_match in all_labels_matching
+		for i in 1:numOfVertices
+			dgp1_object = labels1[i]
+			dgp2_object = labels2[possible_match[i]]
+			# put in a list all the distances of the first DGP
+			distances1 = Vector{Distance}()
+			for (u, v) in keys(dgp1.distlist)
+        		if u == dgp1_object || v == dgp1_object
+            		push!(distances1, dgp1.distlist[(u,v)])
+				end
+        	end
+			# put in a list all the distances of the second DGP
+			distances2 = Vector{Distance}()
+			for (u, v) in keys(dgp2.distlist)
+				if u == dgp2_object || v == dgp2_object
+					push!(distances2, dgp2.distlist[(u,v)])
+				end
+			end
+			# iterate over the distances of the first DGP and check if they are equal to the distances of the second DGP
+			for distance1 in distances1
+				index = findfirst(x -> x == distance1, distances2)
+    			if index !== nothing
+				deleteat!(distances2, index)
+				end
+			end
+			# if distances2 is empty, the two DGP are equal
+			if isempty(distances2)
+				found = true
+				break
+			end
+		end
+	end
+	return found
+end
+
+#override of the '!=' operator
+#two DGP instances satisfy the '!=' operator if they do not satisfy the '==' operator
+function Base.:(!=)(dgp1::DGP{T},dgp2::DGP{T}) where {T}
+   return !(dgp1 == dgp2);
+end
+
+#definition of the '===' operator
+#two DGP instances satisfy the '===' operator if satisfy the '==' operator and if the
+#order of the elements is the same in both instances disregarding what the elements actually are.
+function equalOrder(dgp1::DGP{T}, dgp2::DGP{T}) where {T}
+   # checking the dimensions
+   if dgp1.K != dgp2.K
+        return false
+   end
+
+   # checking the number of vertices
+   if length(dgp1.order) != length(dgp2.order)
+        return false
+   end
+
+    numOfVertices = length(dgp1.order);
+
+    # checking that the number of edges are the same for each vertex
+	for i in 1:numOfVertices
+		if count_edges(dgp1, dgp1.order[i]) != count_edges(dgp2, dgp2.order[i])
+			return false
+		end
+	end
+
+	# checking distances are the same for all matching vertices
+	for i in 1:numOfVertices
+		dgp1_object = dgp1.order[i]
+		dgp2_object = dgp2.order[i]
+		# put in a list all the distances of the first DGP
+		distances1 = Vector{Distance}()
+		for (u, v) in keys(dgp1.distlist)
+			if u == dgp1_object || v == dgp1_object
+				push!(distances1, dgp1.distlist[(u,v)])
+			end
+		end
+		# put in a list all the distances of the second DGP
+		distances2 = Vector{Distance}()
+		for (u, v) in keys(dgp2.distlist)
+			if u == dgp2_object || v == dgp2_object
+				push!(distances2, dgp2.distlist[(u,v)])
+			end
+		end
+		# iterate over the distances of the first DGP and check if they are equal to the distances of the second DGP
+		for distance1 in distances1
+			index = findfirst(x -> x == distance1, distances2)
+			if index !== nothing
+			deleteat!(distances2, index)
+			end
+		end
+		# if distances2 is empty, the two DGP are equal
+		if !isempty(distances2)
+			return false
+		end
+	end
+
+	return true
+end
+
+#definition of the '!==' operator
+#two DGP instances satisfy the '!==' operator if they do not satisfy the '===' operator
+function notEqualOrder(dgp1::DGP{T},dgp2::DGP{T}) where {T}
+   return !equalOrder(dgp1,dgp2)
+end
+
+#definition of the '====' operator
+#two DGP instances satisfy the '====' operator if they satisfy the '===' operator and if all the
+#elements of the two instances are the exact same.
+function equals(dgp1::DGP{T},dgp2::DGP{T}) where {T}
+	#checking if the two instances satisfy the '===' operator (they are isomorphic)
+	if (notEqualOrder(dgp1,dgp2))
+    	return false
+   end
+
+   numOfVertices = length(dgp1.order)
+
+   #checking if the two instances have the same elements
+   for i in 1:numOfVertices
+   		if dgp1.order[i] != dgp2.order[i]
+   			return false
+   		end
+   end
+
+   return true
+end
+
+
+#definition of the '!====' operator
+#two DGP instances satisfy the '!====' operator if they do not satisfy the '====' operator
+function notEquals(dgp1::DGP{T},dgp2::DGP{T}) where {T}
+   return !(dgp1 ≡ dgp2);
+end

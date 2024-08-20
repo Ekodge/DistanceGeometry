@@ -62,6 +62,10 @@ end
 
 # extracting the amino acid sequence from a PDB file
 function sequence(PDBfile::String)
+   if !isfile(PDBfile)
+      throw(ArgumentError("Input PDB file does not exist"));
+   end
+
    ex = get_extension(PDBfile);
    if ex != "pdb"
       throw(ArgumentError("Input file is supposed to be a PDB file; check if extension is coherent with content"));
