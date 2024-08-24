@@ -11,11 +11,11 @@ include("utilstest.jl")
     @testset "distlist tests" begin
         include("distlist_tests.jl")
     end
-    @testset "aminoacids tests" begin
-        include("aminoacids_tests.jl")
-    end
     @testset "myAtom tests" begin
         include("myAtom_tests.jl")
+    end
+    @testset "aminoacids tests" begin
+        include("aminoacids_tests.jl")
     end
     @testset "Realization tests" begin
         include("realization_tests.jl")

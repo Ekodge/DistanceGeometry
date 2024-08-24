@@ -1,0 +1,13 @@
+loop_
+_Gen_dist_constraint.PDB_residue_no_1
+_Gen_dist_constraint.PDB_residue_no_2
+_Gen_dist_constraint.PDB_residue_name_1
+_Gen_dist_constraint.PDB_residue_name_2
+_Gen_dist_constraint.Auth_atom_ID_1
+_Gen_dist_constraint.Auth_atom_ID_2
+_Gen_dist_constraint.Distance_lower_bound_val
+_Gen_dist_constraint.Distance_upper_bound_val
+1 1 ALA ALA CA N 5.196152422706632 5.196152422706632
+1 1 ALA ALA C CA 5.196152422706632 5.196152422706632
+1 1 ALA ALA C N 10.392304845413264 10.392304845413264
+stop_

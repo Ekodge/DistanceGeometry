@@ -236,7 +236,7 @@ end
             @test dgp == dgp2
         end
 
-        @testset " (===) equalOrder function" begin
+        @testset "(===) equalOrder function" begin
             atoms = create_sample_PDBTool_atoms()
             realization = Realization(atoms)
             dgp = DGP(realization)
@@ -279,7 +279,7 @@ end
             @test notEqualOrder(dgp,dgp2)
         end
 
-        @testset " (====) equals function" begin
+        @testset "(====) equals function" begin
             atoms = create_sample_PDBTool_atoms()
             realization = Realization(atoms)
             dgp = DGP(realization)
